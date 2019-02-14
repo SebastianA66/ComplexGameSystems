@@ -21,6 +21,7 @@ GameObject:
   - component: {fileID: 4776376844123868}
   - component: {fileID: 33859332803658996}
   - component: {fileID: 23713107836295018}
+  - component: {fileID: 114359922711142922}
   m_Layer: 0
   m_Name: BlackPiece
   m_TagString: Untagged
@@ -83,3 +84,16 @@ MeshFilter:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1761110380728518}
   m_Mesh: {fileID: 4300000, guid: ad1bdfd44297d6941a23ae3eed68b4d2, type: 3}
+--- !u!114 &114359922711142922
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1761110380728518}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 55bc835d06575a246a5d1940e05aa6d3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  isWhite: 0
+  isKing: 0
