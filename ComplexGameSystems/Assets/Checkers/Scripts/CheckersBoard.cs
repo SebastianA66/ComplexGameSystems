@@ -256,6 +256,12 @@ namespace Checkers
                             
         }
 
+        /// <summary>
+        /// Checks if given coordinates are out of the board range
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <returns></returns>
         private bool OutOfBounds(int x, int y)
         {
             return x < 0 || x >= 8 || y < 0 || y >= 8;
@@ -268,20 +274,136 @@ namespace Checkers
             int x2 = (int)end.x;
             int y2 = (int)end.y;
 
+            // Rule #1 : Is the start the same as the end?
             if(start == end)
             {
-                
+                // You can move back where you were
                 return true;
             }
 
-            // If you are moving on top of another piece
+            // Rule #2 : If you are moving on top of another piece
             if(pieces[x2, y2])
             {
                 // Can't let you do that Star Fox
                 return false;
             }
-            
-            return true;
+
+            // Rule 3
+            int locationX = Mathf.Abs(x1 - x2);
+            int locationY = y2 - y1;
+
+            // Rule #3.1 : White piece rule
+            if(selectedPiece.isWhite || selectedPiece.isKing)
+            {
+                // Check if we're moving diagonally right
+                if(locationX == 1 && locationY == 1)
+                {
+                    // Outstanding move
+                    return true;
+                }
+                //if Moving diagonlly left (two spaces)
+                else if (locationX == 2 && locationY == 2)
+                {
+                    // Get the piece in between move
+                    Piece pieceBetween = GetPieceBetween(start, end);
+                    // If there is a piece between and the piece isn't the same colour
+                    if(pieceBetween != null && pieceBetween.isWhite != selectedPiece.isWhite)
+                    {
+                        // Destroy the piece between
+                        RemovePiece(pieceBetween);
+                        // Can't let you do that Star Fox
+                        return true;
+                    }
+                }
+            }
+
+            // Rule #3.2 : Black piece rule
+            if (selectedPiece.isWhite || selectedPiece.isKing)
+            {
+                // Check if we're moving diagonally right
+                if (locationX == 1 && locationY == -1)
+                {
+                    // Outstanding move
+                    return true;
+                }
+                //if Moving diagonlly left (two spaces)
+                else if (locationX == 2 && locationY == -2)
+                {
+                    // Get the piece in between move
+                    Piece pieceBetween = GetPieceBetween(start, end);
+                    // If there is a piece between and the piece isn't the same colour
+                    if (pieceBetween != null && pieceBetween.isWhite != selectedPiece.isWhite)
+                    {
+                        // Destroy the piece between
+                        RemovePiece(pieceBetween);
+                        // Can't let you do that Star Fox
+                        return true;
+                    }
+
+                }
+
+                //print("X location" + XLocation + "Y Location" + YLocation);
+
+                return false;
+            }
         }
+
+        /// <summary>
+        /// Calculates & returns the piece between start and end locations
+        /// </summary>
+        /// <param name="start"> X Locations</param>
+        /// <param name="end"></param>
+        /// <returns></returns>
+        private Piece GetPieceBetween(Vector2 start, Vector2 end)
+        {
+            int xIndex = (int)(start.x + end.x) / 2;
+            int yIndex = (int)(start.y + end.y) / 2;
+            return pieces[xIndex, yIndex];
+        }
+
+        /// <summary>
+        /// Removes a piece from the board
+        /// </summary>
+        /// <param name="pieceToRemove"></param>
+        private void RemovePiece(Piece pieceToRemove)
+        {
+            // Remove it from the array
+            pieces[pieceToRemove.x, pieceToRemove.y] = null;
+            // Destroy the gameobject
+            DestroyImmediate(pieceToRemove.gameObject);
+            
+        }
+
+        /// <summary>
+        /// Runs after the turn has finished
+        /// </summary>
+        private void EndTurn()
+        {
+            CheckForKing();
+        }
+
+        void CheckForKing()
+        {
+            // Get the end drag locations
+            int x = (int)endDrag.x;
+            int y = (int)endDrag.y;
+            // Check if the selected piece needs to be kinged
+            if (selectedPiece && !selectedPiece.isKing)
+            {
+
+                bool whiteNeedsKing = selectedPiece.isWhite && y == 7;
+                bool blackNeedsKing = !selectedPiece.isWhite && y == 0;
+                // If the selected piece is white and reached the end of the board
+                if (selectedPiece.isWhite && y == 7)
+                {
+                    // The selected piece is kinged
+                    selectedPiece.isKing = true;
+                    // Run animations
+                }
+
+            }
+        }
+           
+             
     }
 }
