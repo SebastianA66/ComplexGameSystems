@@ -242,6 +242,8 @@ namespace Checkers
                 {
                     // Replace end coordinates with our selected piece
                     MovePiece(selectedPiece, x2, y2);
+                    // Check for king if the move was successful
+                    CheckForKing();
                 }
                 else
                 {
@@ -249,7 +251,7 @@ namespace Checkers
                     MovePiece(selectedPiece, x1, y1);
                 }
 
-                
+                EndTurn();
             }           
                       
                               
@@ -344,8 +346,9 @@ namespace Checkers
 
                 //print("X location" + XLocation + "Y Location" + YLocation);
 
-                return false;
             }
+            return false;
+
         }
 
         /// <summary>
@@ -379,7 +382,17 @@ namespace Checkers
         /// </summary>
         private void EndTurn()
         {
-            CheckForKing();
+            
+        }
+
+        private void StartTurn()
+        {
+            List<Piece> piecesToMove = GetPossibleMoves();
+            if(piecesToMove.Count != 0)
+            {
+                // Forced to move pieces
+                print("Forced Piece");
+            }
         }
 
         void CheckForKing()
@@ -403,7 +416,86 @@ namespace Checkers
 
             }
         }
+        
+        /// <summary>
+        /// Detect if there is a forced move for a given piece
+        /// </summary>
+        /// <param name="piece"></param>
+        /// <returns></returns>
+        public bool IsForcedMove(Piece piece)
+        {
            
-             
+            // Is the piece white or kinged
+            if(piece.isWhite || piece.isKing)
+            {
+                for (int i = -1; i <= 1; i++)
+                {
+                    for(int j = -1; j <= 1; j++)
+                    {
+                        if(i == 0 || j == 0)
+                        {
+                            continue;
+                        }
+
+                        // Creating a new X from piece coordinates using offset
+                        int x1 = piece.x + i;
+                        int y1 = piece.y + j;
+
+                        if(OutOfBounds(x1, y1))
+                        {
+                            continue;
+                        }
+
+                        // Try getting the piece at coordinates
+                        Piece detectedPiece = pieces[x1, y1];
+                        // If there is a piece there and the piece isn't the same colour
+                        if(detectedPiece != null && detectedPiece.isWhite != selectedPiece.isWhite)
+                        {
+                            int x2 = x1 + i;
+                            int y2 = y1 + j;
+
+                            if(OutOfBounds(x2, y2))
+                            {
+                                continue;
+                            }
+
+                            // Check if we can jump (if the cell next to it is empty)
+                            Piece destinationCell = pieces[x2 + i, y2 + j];
+                            if(destinationCell == null)
+                            {
+                                return true;
+                            }
+                        }
+                    }
+                }
+            }
+
+
+            // If all else fails, it means there is no forced move for this piece
+            return false;
+        }
+        
+        public List<Piece> GetPossibleMoves()
+        {
+            List<Piece> forcedPieces = new List<Piece>();
+
+            // Check the entire board
+            for (int x = 0; x < 8; x++)
+            {
+                for (int y = 0; y < 9; y++)
+                {
+                    Piece pieceToCheck = pieces[x, y];
+                    if(pieceToCheck != null)
+                    {
+                        if(IsForcedMove(pieceToCheck))
+                        {
+                            forcedPieces.Add(pieceToCheck);
+                        }
+                    }
+                }
+            }
+
+            return forcedPieces;
+        }
     }
 }
