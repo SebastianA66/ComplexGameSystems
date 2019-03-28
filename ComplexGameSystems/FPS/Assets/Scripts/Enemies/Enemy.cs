@@ -2,11 +2,16 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Enemy : MonoBehaviour
+public class Enemy : MonoBehaviour, IKillable
 {
     public int health = 100;
     public int damage = 25;
-    public void DealDamage(int damage)
+
+    public void Kill()
+    {
+
+    }
+    public void TakeDamage(int damage)
     {
         // Reduce health by damage
         health -= damage;

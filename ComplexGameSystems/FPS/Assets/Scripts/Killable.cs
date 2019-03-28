@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Pistol : MonoBehaviour
+public interface IKillable
 {
-
-
+    void Kill();
+    void TakeDamage(int damage);
 }
